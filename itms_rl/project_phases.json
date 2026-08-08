@@ -1,0 +1,58 @@
+﻿[
+  {
+    "phase_no": 1,
+    "title": "Foundation Setup",
+    "desc": "Team formation and work distribution",
+    "date": "Jan 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 2,
+    "title": "Literature Survey",
+    "desc": "Problem study, references, and architecture draft",
+    "date": "Jan 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 3,
+    "title": "Abstract and Proposal",
+    "desc": "Abstract finalization and proposal preparation",
+    "date": "Jan 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 4,
+    "title": "Initial Planning",
+    "desc": "Module split and implementation planning",
+    "date": "Jan 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 5,
+    "title": "0th Review",
+    "desc": "Synopsis approved",
+    "date": "Feb 9, 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 6,
+    "title": "1st Review - Implementation",
+    "desc": "Software simulation plus RL agent plus dashboard",
+    "date": "Feb 23, 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 7,
+    "title": "2nd Review - Testing",
+    "desc": "Full RL integration, pedestrian module, weather-aware control",
+    "date": "Mar 16, 2026",
+    "status": "done"
+  },
+  {
+    "phase_no": 8,
+    "title": "3rd Review - Final Demo",
+    "desc": "Final presentation and project demo",
+    "date": "Apr 6, 2026",
+    "status": "done"
+  }
+]
