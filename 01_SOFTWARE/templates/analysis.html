@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analysis — ITMS RL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;background:#f8fafc;color:#1e293b}
+nav{display:flex;justify-content:space-between;align-items:center;padding:12px 28px;background:#1e293b;border-bottom:1px solid #334155;position:sticky;top:0;z-index:100}
+.brand{font-family:'Bebas Neue';font-size:1.35rem;color:#818cf8;letter-spacing:2px}
+.nav-links a{color:#94a3b8;text-decoration:none;margin-left:18px;font-weight:600;font-size:.8rem;transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:#f1f5f9}
+main{max-width:1120px;margin:0 auto;padding:28px 24px 60px}
+h1{font-family:'Bebas Neue';font-size:2rem;letter-spacing:1.5px;text-align:center;margin-bottom:28px}
+.sec{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:24px 28px;margin-bottom:22px}
+.st{font-size:1rem;font-weight:700;margin-bottom:4px}
+.ss{color:#64748b;font-size:.78rem;margin-bottom:18px}
+.no-data{text-align:center;color:#94a3b8;padding:28px;font-size:.85rem}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;color:#475569;font-size:.72rem;font-weight:700;padding:9px 12px;text-align:left;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e2e8f0}
+td{padding:11px 12px;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+tr:last-child td{border:none}tr:hover td{background:#fafafa}
+.lc{font-weight:700;color:#4f46e5}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.cw{height:240px;position:relative}
+/* Decision mode legend */
+.dm-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center}
+.dm-pill{display:flex;align-items:center;gap:5px;font-size:.76rem;font-weight:600;color:#475569}
+.dm-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:#94a3b8;gap:8px}
+.empty-state .ic{font-size:2rem}
+@media(max-width:760px){.cgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">🚦 ITMS — RL</span>
+  <div class="nav-links">
+    <a href="/home">Home</a><a href="/upload">Upload</a>
+    <a href="/dashboard">Dashboard</a><a href="/rl_monitor">RL Monitor</a>
+    <a href="/analysis" class="active">Analysis</a><a href="/logout">Logout</a>
+  </div>
+</nav>
+<main>
+  <h1>Analysis Dashboard</h1>
+
+  <!-- Cumulative table -->
+  <div class="sec">
+    <div class="st">Cumulative Vehicles Per Lane</div>
+    <div class="ss">Logged to database each time a lane's green phase ends.</div>
+    <table>
+      <thead><tr><th>Lane</th><th>Cars</th><th>Buses</th><th>Trucks</th><th>Motorcycles</th><th>Ambulances</th><th>Pedestrians</th><th>Total</th></tr></thead>
+      <tbody id="cumBody"><tr><td colspan="8" class="no-data">Loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="cgrid">
+    <!-- Live density -->
+    <div class="sec">
+      <div class="st">Live Traffic Density</div>
+      <div class="ss">Current vehicle count per lane from detectors.</div>
+      <div class="cw"><canvas id="cDensity"></canvas></div>
+    </div>
+
+    <!-- RL vs Traditional -->
+    <div class="sec">
+      <div class="st">RL vs Traditional Signal Timing</div>
+      <div class="ss">Dynamic RL green time vs fixed 30s traditional system.</div>
+      <div class="cw"><canvas id="cEff"></canvas></div>
+    </div>
+
+    <!-- Decision mode donut — from real DB counts -->
+    <div class="sec">
+      <div class="st">Decision Mode Distribution</div>
+      <div class="ss">How often each RL strategy was used (from logged cycles).</div>
+      <div class="cw" id="dmWrap">
+        <div class="empty-state" id="dmEmpty">
+          <span class="ic">🧠</span>
+          <span>No cycles logged yet — run the dashboard first</span>
+        </div>
+        <canvas id="cDM" style="display:none"></canvas>
+      </div>
+      <div class="dm-legend" id="dmLegend"></div>
+    </div>
+
+    <!-- Vehicle type breakdown -->
+    <div class="sec">
+      <div class="st">Vehicle Type Breakdown</div>
+      <div class="ss">Aggregate counts across all lanes (logged data).</div>
+      <div class="cw"><canvas id="cVT"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Wait time per lane -->
+  <div class="sec">
+    <div class="st">Live Wait Time Per Lane</div>
+    <div class="ss">Current accumulated wait time (seconds) for each red-signal lane.</div>
+    <div style="height:200px;position:relative"><canvas id="cWait"></canvas></div>
+  </div>
+</main>
+
+<script>
+const LANES = ['Lane 1','Lane 2','Lane 3','Lane 4'];
+const LANE_COLORS = ['#f9a8d4','#93c5fd','#fde68a','#6ee7b7'];
+
+const chartBase = (type, labels, datasets, opts={}) => ({
+  type, data:{labels, datasets},
+  options:{responsive:true,maintainAspectRatio:false,...opts}
+});
+
+const cDensity = new Chart(document.getElementById('cDensity'), {
+  type:'bar', data:{labels:LANES,datasets:[{label:'Density',data:[0,0,0,0],backgroundColor:LANE_COLORS,borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+
+const cEff = new Chart(document.getElementById('cEff'), {
+  type:'bar', data:{labels:LANES,datasets:[
+    {label:'RL (Dynamic)',data:[0,0,0,0],backgroundColor:'#5eead4',borderRadius:4},
+    {label:'Traditional (30s)',data:[30,30,30,30],backgroundColor:'#fda4af',borderRadius:4}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    scales:{y:{beginAtZero:true,title:{display:true,text:'Green Time (s)'}}}}
+});
+
+// Decision mode donut — created lazily when data arrives
+let cDM = null;
+const DM_COLORS = {'rl_exploit':'#818cf8','rl_explore':'#a5b4fc','ambulance_override':'#f87171','pedestrian_override':'#4ade80','starvation_guard':'#fbbf24','rule_based':'#94a3b8','unknown':'#374151'};
+const DM_LABELS = {'rl_exploit':'RL Exploit','rl_explore':'RL Explore','ambulance_override':'Ambulance','pedestrian_override':'Pedestrian','starvation_guard':'Starvation Guard','rule_based':'Rule Based','unknown':'Unknown'};
+
+function updateDM(dm) {
+  const keys   = Object.keys(dm).filter(k => dm[k] > 0);
+  const values = keys.map(k => dm[k]);
+  const colors = keys.map(k => DM_COLORS[k] || '#94a3b8');
+  const labels = keys.map(k => DM_LABELS[k] || k);
+
+  if(keys.length === 0) {
+    document.getElementById('dmEmpty').style.display='flex';
+    document.getElementById('cDM').style.display='none';
+    document.getElementById('dmLegend').innerHTML='';
+    return;
+  }
+
+  document.getElementById('dmEmpty').style.display='none';
+  document.getElementById('cDM').style.display='block';
+
+  if(!cDM) {
+    cDM = new Chart(document.getElementById('cDM'), {
+      type:'doughnut',
+      data:{labels, datasets:[{data:values,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%'}
+    });
+  } else {
+    cDM.data.labels = labels;
+    cDM.data.datasets[0].data = values;
+    cDM.data.datasets[0].backgroundColor = colors;
+    cDM.update();
+  }
+
+  // Build legend
+  const total = values.reduce((a,b)=>a+b,0);
+  document.getElementById('dmLegend').innerHTML = keys.map((k,i) =>
+    `<span class="dm-pill"><span class="dm-dot" style="background:${colors[i]}"></span>${labels[i]}: <b>${values[i]}</b> (${Math.round(values[i]/total*100)}%)</span>`
+  ).join('');
+}
+
+const cVT = new Chart(document.getElementById('cVT'), {
+  type:'bar', data:{labels:['Cars','Buses','Trucks','Motorcycles','Ambulances','Pedestrians'],
+    datasets:[{data:[0,0,0,0,0,0],backgroundColor:['#818cf8','#34d399','#f59e0b','#60a5fa','#f87171','#22d3ee'],borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+
+const cWait = new Chart(document.getElementById('cWait'), {
+  type:'bar', data:{labels:LANES,datasets:[{label:'Wait (s)',data:[0,0,0,0],backgroundColor:['#f87171','#fbbf24','#4ade80','#38bdf8'],borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,title:{display:true,text:'Seconds'}}}}
+});
+
+async function load() {
+  try {
+    const d = await fetch('/analysis_data').then(r=>r.json());
+
+    // Cumulative table
+    const tb = document.getElementById('cumBody');
+    tb.innerHTML = '';
+    let allZero = true;
+    LANES.forEach(l => {
+      const r = d.lanes[l]||{};
+      if(r.total > 0) allZero = false;
+      tb.innerHTML += `<tr>
+        <td class="lc">${l}</td>
+        <td>${r.cars||0}</td><td>${r.buses||0}</td><td>${r.trucks||0}</td>
+        <td>${r.motorcycles||0}</td><td>${r.ambulances||0}</td><td>${r.pedestrians||0}</td>
+        <td><strong>${r.total||0}</strong></td>
+      </tr>`;
+    });
+    if(allZero) tb.innerHTML = '<tr><td colspan="8" class="no-data">No cycles logged yet — run the dashboard first</td></tr>';
+
+    // Density — from live detectors
+    cDensity.data.datasets[0].data = LANES.map(l => d.density[l]||0);
+    cDensity.update();
+
+    // Efficiency — RL green times from live logic
+    cEff.data.datasets[0].data = LANES.map(l => d.green_times[l]||0);
+    cEff.update();
+
+    // Decision modes — from real DB query
+    updateDM(d.decision_modes || {});
+
+    // Vehicle type totals
+    const tot = {cars:0,buses:0,trucks:0,motorcycles:0,ambulances:0,pedestrians:0};
+    LANES.forEach(l => { const r=d.lanes[l]||{}; Object.keys(tot).forEach(k=>tot[k]+=(r[k]||0)); });
+    cVT.data.datasets[0].data = Object.values(tot);
+    cVT.update();
+
+    // Wait times — live from stats
+    cWait.data.datasets[0].data = LANES.map(l => d.wait_times[l]||0);
+    cWait.update();
+
+  } catch(e) { console.warn(e); }
+}
+
+load(); setInterval(load, 3000);
+</script>
+</body>
+</html>

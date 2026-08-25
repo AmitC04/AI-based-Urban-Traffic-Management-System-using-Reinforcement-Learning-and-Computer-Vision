@@ -1,0 +1,43 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# YOLOv8 large weights (too big for GitHub)
+*.pt
+runs/
+
+# Model weights (large binary)
+*.h5
+*.weights.h5
+
+# User database (contains sensitive data)
+users.db
+*.db
+
+# Uploaded videos (user data, large files)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Dataset cache
+*.cache
+
+# Datasets
+datasets/
+dataset.zip

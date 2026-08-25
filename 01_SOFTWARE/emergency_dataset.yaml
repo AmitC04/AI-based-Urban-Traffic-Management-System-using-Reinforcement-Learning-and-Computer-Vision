@@ -1,0 +1,13 @@
+# emergency_dataset.yaml
+# YOLOv8 Dataset Configuration
+
+# Path to the dataset root directory
+path: ./datasets/emergency_vehicles
+
+# Paths to the training and validation image directories (relative to 'path')
+train: images/train
+val: images/val
+
+# Classes
+names:
+  0: emergency_vehicle  # We group ambulance, fire truck, and police into one class for simplicity

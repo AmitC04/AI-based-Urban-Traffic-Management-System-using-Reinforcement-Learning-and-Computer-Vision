@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Dashboard — ITMS RL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;background:#0d1117;color:#e6edf3}
+nav{display:flex;justify-content:space-between;align-items:center;padding:12px 28px;background:#161b22;border-bottom:1px solid #30363d;position:sticky;top:0;z-index:100}
+.brand{font-family:'Bebas Neue';font-size:1.35rem;color:#818cf8;letter-spacing:2px}
+.nav-links a{color:#8b949e;text-decoration:none;margin-left:18px;font-weight:600;font-size:.8rem;transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:#e6edf3}
+.topbar{background:#161b22;border-bottom:1px solid #21262d;padding:8px 28px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.ti{display:flex;align-items:center;gap:6px;font-size:.78rem;color:#8b949e}
+.ti strong{color:#e6edf3}
+.badge{padding:2px 9px;border-radius:10px;font-size:.68rem;font-weight:700;letter-spacing:.3px}
+.b-rl  {background:rgba(129,140,248,.15);color:#818cf8;border:1px solid rgba(129,140,248,.3)}
+.b-amb {background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.b-ped {background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.b-rule{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.alerts{display:flex;gap:10px;padding:6px 28px;flex-wrap:wrap;min-height:10px}
+.abox{display:none;border-radius:8px;padding:6px 16px;font-weight:700;font-size:.8rem;align-items:center;gap:7px}
+.abox.show{display:flex}
+.a-amb{background:rgba(239,68,68,.12);border:1.5px solid #ef4444;color:#f87171;animation:pulse 1s infinite}
+.a-ped{background:rgba(34,197,94,.12);border:1.5px solid #22c55e;color:#4ade80}
+.a-wx {background:rgba(56,189,248,.1);border:1px solid #38bdf8;color:#7dd3fc}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 28px;max-width:1500px;margin:0 auto}
+.lane-card{background:#161b22;border:2px solid #21262d;border-radius:12px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.lane-card.c-green {border-color:#22c55e;box-shadow:0 0 18px rgba(34,197,94,.2)}
+.lane-card.c-yellow{border-color:#f59e0b;box-shadow:0 0 10px rgba(245,158,11,.15)}
+.lane-card.c-amb   {border-color:#ef4444;box-shadow:0 0 22px rgba(239,68,68,.3)}
+.lane-card.c-ped   {border-color:#22d3ee;box-shadow:0 0 18px rgba(34,211,238,.15)}
+.lane-inner{display:flex}
+.sig-col{width:54px;background:#0d1117;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:9px;flex-shrink:0;border-right:1px solid #21262d}
+.bulb{width:26px;height:26px;border-radius:50%;background:#1c2128;transition:background .3s,box-shadow .3s;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.bulb.on-r{background:#ef4444;box-shadow:0 0 14px rgba(239,68,68,.9),0 0 26px rgba(239,68,68,.35)}
+.bulb.on-y{background:#f59e0b;box-shadow:0 0 14px rgba(245,158,11,.9),0 0 26px rgba(245,158,11,.35)}
+.bulb.on-g{background:#22c55e;box-shadow:0 0 14px rgba(34,197,94,.9),0 0 26px rgba(34,197,94,.35)}
+.sig-label{font-size:.52rem;font-weight:700;letter-spacing:.8px;color:#484f58;text-transform:uppercase;margin-top:3px}
+.vid-col{flex:1;position:relative;background:#0d1117;min-height:200px}
+.vid-col img{width:100%;height:100%;object-fit:cover;display:block}
+.lane-tag{position:absolute;top:7px;right:8px;background:rgba(13,17,23,.8);color:#e6edf3;font-weight:700;font-size:.76rem;padding:2px 7px;border-radius:5px}
+.no-feed{display:flex;align-items:center;justify-content:center;height:200px;flex-direction:column;gap:7px;color:#484f58;font-size:.8rem}
+.no-feed .ic{font-size:1.8rem}
+.stats-strip{background:#0d1117;border-top:1px solid #21262d;padding:6px 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{display:flex;align-items:center;gap:3px;font-size:.7rem;color:#8b949e;white-space:nowrap}
+.sp b{color:#c9d1d9;min-width:14px;text-align:right}
+.sp.hi b{color:#f87171}.sp.hg b{color:#4ade80}.sp.hw b{color:#fbbf24}
+.dot-sig{width:7px;height:7px;border-radius:50%;background:#484f58;display:inline-block}
+.dot-sig.g{background:#22c55e}.dot-sig.y{background:#f59e0b}.dot-sig.r{background:#ef4444}
+@media(max-width:760px){.grid{grid-template-columns:1fr;padding:10px}}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">🚦 ITMS — RL+CV</span>
+  <div class="nav-links">
+    <a href="/home">Home</a><a href="/upload">Upload</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+    <a href="/rl_monitor">RL Monitor</a>
+    <a href="/analysis">Analysis</a><a href="/logout">Logout</a>
+  </div>
+</nav>
+<div class="topbar">
+  <div class="ti">🌦️ <strong id="wxLbl">—</strong></div>
+  <div class="ti">🧠 Mode: <span class="badge b-rl" id="modeLbl">—</span></div>
+  <div class="ti">ε: <strong id="epsVal">—</strong></div>
+  <div class="ti">🏆 Reward: <strong id="rewVal">—</strong></div>
+  <div class="ti">🔄 Cycle: <strong id="cycVal">—</strong></div>
+  <div class="ti">💾 Mem: <strong id="memVal">—</strong></div>
+  <div class="ti" style="margin-left:auto">
+    <a href="/rl_monitor" style="color:#818cf8;font-weight:700;font-size:.78rem;text-decoration:none">🧠 RL Monitor →</a>
+  </div>
+</div>
+<div class="alerts">
+  <div class="abox a-amb" id="aAmb">🚨 AMBULANCE DETECTED — Emergency Override Active</div>
+  <div class="abox a-ped" id="aPed">🚶 PEDESTRIAN CROSSING — Safety Override Active</div>
+  <div class="abox a-wx"  id="aWx"></div>
+</div>
+<div class="grid">
+  {% for lane in [1,2,3,4] %}
+  <div class="lane-card" id="card{{lane}}">
+    <div class="lane-inner">
+      <div class="sig-col">
+        <div class="bulb" id="br{{lane}}"></div>
+        <div class="bulb" id="by{{lane}}"></div>
+        <div class="bulb" id="bg{{lane}}"></div>
+        <span class="sig-label" id="sl{{lane}}">—</span>
+      </div>
+      <div class="vid-col" id="vc{{lane}}">
+        <img src="/video_feed/{{lane}}" alt="Lane {{lane}}"
+             onerror="noFeed({{lane}})">
+        <div class="lane-tag">Lane {{lane}}</div>
+      </div>
+    </div>
+    <div class="stats-strip">
+      <span class="sp"><span class="dot-sig" id="ds{{lane}}"></span>&nbsp;<b id="ss{{lane}}">—</b></span>
+      <span class="sp">🚗<b id="sc{{lane}}">—</b></span>
+      <span class="sp">🚌<b id="sbu{{lane}}">—</b></span>
+      <span class="sp">🚛<b id="str{{lane}}">—</b></span>
+      <span class="sp">🏍<b id="smo{{lane}}">—</b></span>
+      <span class="sp">👤<b id="spe{{lane}}">—</b></span>
+      <span class="sp hw">⏱<b id="swt{{lane}}">—</b>s</span>
+      <span class="sp hg">🟢<b id="sgt{{lane}}">—</b></span>
+      <span class="sp hi" id="ambSp{{lane}}" style="display:none">🚑AMB!</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+function noFeed(lane) {
+  const vc = document.getElementById('vc'+lane);
+  vc.innerHTML = '<div class="no-feed"><span class="ic">📷</span><span>No feed — Upload videos first</span></div>';
+}
+
+const MODE_CLS = {rl_exploit:'b-rl',rl_explore:'b-rl',ambulance_override:'b-amb',pedestrian_override:'b-ped',starvation_guard:'b-rule',rule_based:'b-rule',initializing:'b-rule'};
+const MODE_TXT = {rl_exploit:'RL EXPLOIT',rl_explore:'RL EXPLORE',ambulance_override:'🚑 AMB OVERRIDE',pedestrian_override:'🚶 PED OVERRIDE',starvation_guard:'STARVATION GUARD',rule_based:'RULE BASED',initializing:'STARTING…'};
+
+function applySignal(lane, signal, isAmb, isPed) {
+  const br = document.getElementById('br'+lane);
+  const by = document.getElementById('by'+lane);
+  const bg = document.getElementById('bg'+lane);
+  const sl = document.getElementById('sl'+lane);
+  const ds = document.getElementById('ds'+lane);
+  const card = document.getElementById('card'+lane);
+
+  br.className='bulb'; by.className='bulb'; bg.className='bulb';
+  card.className='lane-card';
+  ds.className='dot-sig';
+
+  if(signal==='red')    { br.classList.add('on-r'); ds.classList.add('r'); card.classList.add('c-yellow'); }
+  if(signal==='yellow') { by.classList.add('on-y'); ds.classList.add('y'); card.classList.add('c-yellow'); }
+  if(signal==='green')  { bg.classList.add('on-g'); ds.classList.add('g'); card.classList.add('c-green'); }
+  if(isAmb && signal==='green') { card.classList.remove('c-green'); card.classList.add('c-amb'); }
+  if(isPed && signal==='green') { card.classList.remove('c-green'); card.classList.add('c-ped'); }
+  sl.textContent = signal.toUpperCase();
+  document.getElementById('ss'+lane).textContent = signal.toUpperCase();
+}
+
+async function poll() {
+  try {
+    const [stats, counts] = await Promise.all([
+      fetch('/stats_api').then(r => r.json()),
+      fetch('/live_counts').then(r => r.json())
+    ]);
+
+    let anyAmb=false, anyPed=false;
+
+    for(let i=1; i<=4; i++) {
+      const s = stats[i];
+      const c = counts[i] || {};
+      if(!s) continue;
+
+      applySignal(i, s.signal, s.ambulance, s.pedestrian);
+
+      // Car counts from live detector data (real, not from signal logic)
+      document.getElementById('sc' +i).textContent = c.cars        !== undefined ? c.cars        : '—';
+      document.getElementById('sbu'+i).textContent = c.buses       !== undefined ? c.buses       : '—';
+      document.getElementById('str'+i).textContent = c.trucks      !== undefined ? c.trucks      : '—';
+      document.getElementById('smo'+i).textContent = c.motorcycles !== undefined ? c.motorcycles : '—';
+      document.getElementById('spe'+i).textContent = c.pedestrians !== undefined ? c.pedestrians : '—';
+      document.getElementById('swt'+i).textContent = s.wait_time   !== undefined ? s.wait_time   : '—';
+      document.getElementById('sgt'+i).textContent = s.green_time > 0 ? s.green_time+'s' : '—';
+      document.getElementById('ambSp'+i).style.display = s.ambulance ? '' : 'none';
+
+      if(s.ambulance) anyAmb=true;
+      if(s.pedestrian) anyPed=true;
+    }
+
+    document.getElementById('aAmb').classList.toggle('show', anyAmb);
+    document.getElementById('aPed').classList.toggle('show', anyPed);
+
+    const wx = stats.weather || {};
+    const wxA = document.getElementById('aWx');
+    if(wx.factor > 0) {
+      wxA.textContent = '🌦️ ' + wx.label + ' — Green times extended for safety';
+      wxA.classList.add('show');
+    } else {
+      wxA.classList.remove('show');
+    }
+    document.getElementById('wxLbl').textContent = wx.label || '—';
+
+    const dm = stats.decision_mode || 'initializing';
+    const mEl = document.getElementById('modeLbl');
+    mEl.textContent = MODE_TXT[dm] || dm;
+    mEl.className = 'badge ' + (MODE_CLS[dm]||'b-rule');
+
+    if(stats.rl) {
+      document.getElementById('epsVal').textContent = stats.rl.epsilon;
+      document.getElementById('rewVal').textContent = stats.rl.total_reward;
+      document.getElementById('memVal').textContent = stats.rl.memory_size;
+    }
+    if(stats.cycle !== undefined) document.getElementById('cycVal').textContent = stats.cycle;
+  } catch(e) { console.warn(e); }
+}
+
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>

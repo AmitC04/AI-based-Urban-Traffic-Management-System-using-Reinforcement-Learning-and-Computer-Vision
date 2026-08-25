@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home — ITMS RL+CV</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1117;--surface:#161b22;--border:#21262d;
+  --purple:#818cf8;--blue:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;--teal:#2dd4bf;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--ink);color:#e6edf3;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 36px;background:rgba(13,17,23,.85);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(12px)}
+.brand{font-family:'Bebas Neue';font-size:1.5rem;color:var(--purple);letter-spacing:2px;display:flex;align-items:center;gap:8px}
+.nav-links a{color:#6e7681;text-decoration:none;margin-left:22px;font-weight:600;font-size:.82rem;transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:#e6edf3}
+.nav-links a.cta{background:var(--purple);color:#fff;padding:6px 16px;border-radius:20px}
+
+/* ── HERO ── */
+.hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:60px 24px}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 120% 80% at 50% 0%,rgba(99,102,241,.18) 0%,transparent 65%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(56,189,248,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 10% 70%,rgba(74,222,128,.08) 0%,transparent 60%)}
+/* Animated grid lines */
+.hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(129,140,248,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(129,140,248,.05) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:60px 60px}}
+.hero-content{position:relative;z-index:1;max-width:900px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.25);color:var(--purple);padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.5px;margin-bottom:28px;animation:fadeUp .6s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero h1{font-family:'Bebas Neue';font-size:clamp(3rem,7vw,6rem);letter-spacing:2px;line-height:1;color:#fff;text-shadow:0 0 60px rgba(129,140,248,.3);animation:fadeUp .7s .1s ease both}
+.hero h1 .hl{color:transparent;background:linear-gradient(90deg,var(--purple),var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text}
+.hero-sub{font-size:1.05rem;color:#8b949e;max-width:560px;margin:20px auto 0;line-height:1.7;animation:fadeUp .7s .2s ease both}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:36px;animation:fadeUp .7s .3s ease both}
+.btn{padding:13px 28px;border-radius:50px;font-weight:700;font-size:.92rem;text-decoration:none;cursor:pointer;border:none;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.btn-primary{background:linear-gradient(135deg,var(--purple),#6366f1);color:#fff}
+.btn-secondary{background:rgba(255,255,255,.06);color:#e6edf3;border:1px solid rgba(255,255,255,.12)}
+.btn-teal{background:rgba(45,212,191,.15);color:var(--teal);border:1px solid rgba(45,212,191,.3)}
+/* Floating stat chips */
+.stat-chips{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:48px;animation:fadeUp .7s .4s ease both}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px 20px;text-align:center;min-width:120px}
+.chip .cv{font-family:'Bebas Neue';font-size:1.8rem;color:var(--purple)}
+.chip.b{.cv{color:var(--blue)}}
+.chip.g .cv{color:var(--green)}
+.chip.y .cv{color:var(--yellow)}
+.chip .cl{font-size:.7rem;color:#6e7681;margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+
+/* ── SECTION COMMON ── */
+section{padding:72px 36px;max-width:1200px;margin:0 auto}
+.sec-head{text-align:center;margin-bottom:48px}
+.sec-badge{display:inline-block;background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.2);color:var(--purple);padding:3px 12px;border-radius:12px;font-size:.72rem;font-weight:700;letter-spacing:.5px;margin-bottom:12px}
+.sec-head h2{font-family:'Bebas Neue';font-size:2.4rem;letter-spacing:1.5px;color:#fff;margin-bottom:8px}
+.sec-head p{color:#6e7681;font-size:.92rem;max-width:480px;margin-inline:auto;line-height:1.6}
+
+/* ── FEATURE CARDS ── */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 22px;transition:.2s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;inset:0;border-radius:16px;opacity:0;transition:.3s;background:linear-gradient(135deg,rgba(129,140,248,.06),transparent)}
+.feat-card:hover{border-color:rgba(129,140,248,.35);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.feat-card:hover::before{opacity:1}
+.feat-card.new-feat{border-color:rgba(129,140,248,.25);background:linear-gradient(135deg,rgba(99,102,241,.05),var(--surface))}
+.feat-icon{font-size:2.2rem;margin-bottom:14px;display:block}
+.feat-title{font-weight:700;font-size:1rem;margin-bottom:8px;color:#e6edf3}
+.feat-desc{font-size:.83rem;color:#6e7681;line-height:1.6}
+.new-badge{display:inline-block;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);color:var(--green);padding:1px 7px;border-radius:6px;font-size:.65rem;font-weight:700;margin-bottom:8px}
+
+/* ── RL ARCHITECTURE VISUAL ── */
+.arch-wrap{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;overflow-x:auto}
+.arch-flow{display:flex;align-items:center;gap:0;min-width:700px}
+.arch-node{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center;flex:1;min-width:110px;position:relative}
+.arch-node .an-icon{font-size:1.6rem;margin-bottom:8px}
+.arch-node .an-title{font-weight:700;font-size:.8rem;color:#e6edf3;margin-bottom:4px}
+.arch-node .an-sub{font-size:.68rem;color:#6e7681;line-height:1.4}
+.arch-node.highlight{border-color:rgba(129,140,248,.4);background:rgba(99,102,241,.08)}
+.arch-arrow{width:36px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#484f58;font-size:1.1rem}
+/* State breakdown */
+.state-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:28px}
+.state-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.state-box .sb-n{font-family:'Bebas Neue';font-size:1.4rem;color:var(--purple)}
+.state-box .sb-l{font-size:.72rem;color:#6e7681;margin-top:4px}
+.state-box .sb-d{font-size:.7rem;color:#484f58;margin-top:3px}
+
+/* ── METRICS TABLE ── */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px}
+.metric-card h3{font-size:.85rem;font-weight:700;color:#6e7681;margin-bottom:16px;letter-spacing:.3px}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(33,38,45,.8);font-size:.84rem}
+.metric-row:last-child{border:none}
+.metric-row .mk{color:#8b949e}
+.metric-row .mv{font-weight:700;color:#e6edf3}
+.mv.good{color:var(--green)}.mv.warn{color:var(--yellow)}.mv.info{color:var(--blue)}
+
+/* ── TIMELINE ── */
+.timeline{max-width:680px;margin:0 auto}
+.trow{display:flex;gap:0;align-items:flex-start}
+.tline-col{width:32px;display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tdot{width:14px;height:14px;border-radius:50%;margin-top:4px;flex-shrink:0;border:2px solid}
+.tdot.done{background:var(--green);border-color:var(--green)}
+.tdot.active{background:var(--yellow);border-color:var(--yellow)}
+.tdot.pending{background:transparent;border-color:#374151}
+.tconnect{width:2px;flex:1;background:#21262d;margin:4px 0;min-height:20px}
+.tc{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:12px}
+.tc h4{font-size:.9rem;font-weight:700;color:#e6edf3;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center}
+.tc p{font-size:.78rem;color:#6e7681}
+.ts-done{font-size:.7rem;font-weight:700;color:var(--green)}
+.ts-active{font-size:.7rem;font-weight:700;color:var(--yellow);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── FOOTER ── */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:28px 36px;text-align:center;font-size:.78rem;color:#484f58}
+footer strong{color:#6e7681}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 36px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="brand">🚦 ITMS — RL+CV</span>
+  <div class="nav-links">
+    <a href="/home" class="active">Home</a>
+    <a href="/upload">Upload</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/rl_monitor">RL Monitor</a>
+    <a href="/analysis">Analysis</a>
+    <a href="/upload" class="cta">🚀 Start</a>
+    <a href="/logout" style="color:#484f58">Logout</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎓 SRM IST — ECE Dept &nbsp;|&nbsp; 2nd Review — 2026</div>
+    <h1>AI-based Urban<br><span class="hl">Traffic Management</span><br>System</h1>
+    <p class="hero-sub">Reinforcement Learning + Computer Vision for adaptive, real-time smart city traffic signal optimization with emergency vehicle priority and pedestrian safety.</p>
+    <div class="hero-btns">
+      <a href="/upload"     class="btn btn-primary">🚀 Start System</a>
+      <a href="/dashboard"  class="btn btn-secondary">📡 Live Dashboard</a>
+      <a href="/rl_monitor" class="btn btn-teal">🧠 RL Monitor</a>
+    </div>
+    <div class="stat-chips">
+      <div class="chip"><div class="cv">DQN</div><div class="cl">RL Algorithm</div></div>
+      <div class="chip b"><div class="cv" style="color:var(--blue)">18D</div><div class="cl">State Vector</div></div>
+      <div class="chip g"><div class="cv" style="color:var(--green)">4</div><div class="cl">Actions (Lanes)</div></div>
+      <div class="chip y"><div class="cv" style="color:var(--yellow)">5</div><div class="cl">Decision Modes</div></div>
+      <div class="chip"><div class="cv" style="color:var(--teal)">Real</div><div class="cl">No Hardcoding</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <div class="sec-head">
+    <span class="sec-badge">✨ FEATURES</span>
+    <h2>What This System Does</h2>
+    <p>Every feature backed by real data from detectors and the RL agent — nothing hardcoded.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card new-feat">
+      <span class="new-badge">🆕 UPGRADED</span>
+      <span class="feat-icon">🧠</span>
+      <div class="feat-title">DQN Reinforcement Learning</div>
+      <div class="feat-desc">The agent learns optimal signal policies from experience using a 256→256→128 deep Q-network with experience replay, target networks, and Huber loss.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🚦</span>
+      <div class="feat-title">Adaptive Signal Control</div>
+      <div class="feat-desc">Green time is dynamically computed from lane density, accumulated wait time, and weather. No more fixed 30-second timers.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🚑</span>
+      <div class="feat-title">Ambulance Priority Override</div>
+      <div class="feat-desc">YOLOv8 detects ambulances at ≥70% confidence. The current cycle is immediately interrupted and green is given to the emergency lane for 15 seconds.</div>
+    </div>
+    <div class="feat-card new-feat">
+      <span class="new-badge">🆕 NEW</span>
+      <span class="feat-icon">🚶</span>
+      <div class="feat-title">Pedestrian Safety Module</div>
+      <div class="feat-desc">COCO class 0 detection identifies pedestrians in each lane. Pedestrian presence triggers a soft override feeding directly into the RL state vector.</div>
+    </div>
+    <div class="feat-card new-feat">
+      <span class="new-badge">🆕 NEW</span>
+      <span class="feat-icon">🌦️</span>
+      <div class="feat-title">Weather-Aware Timing</div>
+      <div class="feat-desc">Rain and fog conditions extend green times automatically. The weather factor (0–1.0) is a dedicated dimension in the 18-D RL state vector.</div>
+    </div>
+    <div class="feat-card new-feat">
+      <span class="new-badge">🆕 NEW</span>
+      <span class="feat-icon">📊</span>
+      <div class="feat-title">Live RL Training Monitor</div>
+      <div class="feat-desc">Dedicated page with live reward curve, ε-decay chart, Q-network loss, total wait time, and per-lane Q-value bars — all from real agent data.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🛡️</span>
+      <div class="feat-title">Lane Starvation Guard</div>
+      <div class="feat-desc">Any lane skipped 4+ consecutive cycles gets a forced green. This prevents the RL agent from ignoring low-density lanes indefinitely.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🗃️</span>
+      <div class="feat-title">SQLite Cycle Logging</div>
+      <div class="feat-desc">Every signal cycle logs: vehicle counts, pedestrians, ambulances, green time, and the decision mode (exploit/explore/override) to the database.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RL ARCHITECTURE -->
+<section>
+  <div class="sec-head">
+    <span class="sec-badge">🧠 ARCHITECTURE</span>
+    <h2>RL Decision Pipeline</h2>
+    <p>From camera feed to traffic signal — how data flows through the system.</p>
+  </div>
+  <div class="arch-wrap">
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="an-icon">📷</div>
+        <div class="an-title">Video Input</div>
+        <div class="an-sub">4 lane feeds or simulation mode</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">🤖</div>
+        <div class="an-title">YOLOv8</div>
+        <div class="an-sub">Vehicles, pedestrians, ambulance detection</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight">
+        <div class="an-icon">🧠</div>
+        <div class="an-title">State Vector</div>
+        <div class="an-sub">18-dim: density + wait + amb + ped + weather + phase</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight">
+        <div class="an-icon">⚡</div>
+        <div class="an-title">DQN Agent</div>
+        <div class="an-sub">256→256→128→4 Q-values</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">🚦</div>
+        <div class="an-title">Signal Control</div>
+        <div class="an-sub">Green / Yellow / Red per lane</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="an-icon">🏆</div>
+        <div class="an-title">Reward</div>
+        <div class="an-sub">Wait Δ + amb bonus + ped bonus</div>
+      </div>
+    </div>
+    <!-- State breakdown -->
+    <div class="state-grid">
+      <div class="state-box"><div class="sb-n">4D</div><div class="sb-l">Density</div><div class="sb-d">Normalized vehicles per lane</div></div>
+      <div class="state-box"><div class="sb-n">4D</div><div class="sb-l">Wait Time</div><div class="sb-d">Normalized accumulated red wait</div></div>
+      <div class="state-box"><div class="sb-n">4D</div><div class="sb-l">Ambulance</div><div class="sb-d">Binary flag per lane (0/1)</div></div>
+      <div class="state-box"><div class="sb-n">4D</div><div class="sb-l">Pedestrian</div><div class="sb-d">Binary flag per lane (0/1)</div></div>
+      <div class="state-box"><div class="sb-n">1D</div><div class="sb-l">Weather</div><div class="sb-d">0=clear, 0.5=rain, 1.0=fog</div></div>
+      <div class="state-box"><div class="sb-n">1D</div><div class="sb-l">Phase</div><div class="sb-d">Current green lane (normalized)</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PERFORMANCE METRICS -->
+<section>
+  <div class="sec-head">
+    <span class="sec-badge">📈 INTERIM RESULTS</span>
+    <h2>Preliminary Performance</h2>
+    <p>Results from software simulation phase (RL vs fixed-timer baseline).</p>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <h3>Traffic Performance</h3>
+      <div class="metric-row"><span class="mk">Avg wait time reduction</span><span class="mv good">~20–30%</span></div>
+      <div class="metric-row"><span class="mk">Traffic throughput increase</span><span class="mv good">~10–15%</span></div>
+      <div class="metric-row"><span class="mk">Emergency vehicle delay reduction</span><span class="mv good">~35–40%</span></div>
+      <div class="metric-row"><span class="mk">Signal efficiency (improving)</span><span class="mv info">ε-greedy decay</span></div>
+    </div>
+    <div class="metric-card">
+      <h3>RL Agent Config</h3>
+      <div class="metric-row"><span class="mk">Discount factor γ</span><span class="mv info">0.95</span></div>
+      <div class="metric-row"><span class="mk">Learning rate</span><span class="mv info">0.001 (Adam)</span></div>
+      <div class="metric-row"><span class="mk">Replay memory</span><span class="mv info">10,000 transitions</span></div>
+      <div class="metric-row"><span class="mk">ε start → min</span><span class="mv warn">1.0 → 0.05</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIMELINE -->
+<section>
+  <div class="sec-head">
+    <span class="sec-badge">📅 TIMELINE</span>
+    <h2>Project Schedule</h2>
+  </div>
+  <div class="timeline">
+    <div class="trow">
+      <div class="tline-col"><div class="tdot done"></div><div class="tconnect"></div></div>
+      <div class="tc"><h4>Phase 1–4: Foundation <span class="ts-done">✓ DONE</span></h4><p>Team formation, work distribution, literature survey, abstract — Jan 2026</p></div>
+    </div>
+    <div class="trow">
+      <div class="tline-col"><div class="tdot done"></div><div class="tconnect"></div></div>
+      <div class="tc"><h4>Phase 5: 0th Review <span class="ts-done">✓ DONE</span></h4><p>Synopsis approved — Feb 9, 2026</p></div>
+    </div>
+    <div class="trow">
+      <div class="tline-col"><div class="tdot done"></div><div class="tconnect"></div></div>
+      <div class="tc"><h4>Phase 6: 1st Review — Implementation <span class="ts-done">✓ DONE</span></h4><p>Software simulation + RL agent + dashboard — Feb 23, 2026</p></div>
+    </div>
+    <div class="trow">
+      <div class="tline-col"><div class="tdot done"></div><div class="tconnect"></div></div>
+      <div class="tc"><h4>Phase 7: 2nd Review — Testing <span class="ts-done">✓ DONE</span></h4><p>Full RL integration, pedestrian module, weather-aware control — Mar 16, 2026</p></div>
+    </div>
+    <div class="trow">
+      <div class="tline-col"><div class="tdot done"></div><div class="tconnect" style="opacity:0"></div></div>
+      <div class="tc"><h4>Phase 8: 3rd Review — Final Demo <span class="ts-done">✓ DONE</span></h4><p>Final presentation and project demo — Apr 6, 2026</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>AI-based Urban Traffic Management System — RL + Computer Vision</strong><br>
+  Amit Chauhan (RA2311004010332) &nbsp;|&nbsp; Shaily Giri (RA2311004010347) &nbsp;|&nbsp; Lakshita (RA2311004010354)<br>
+  Guide: Dr. Bharathababu K &nbsp;|&nbsp; Dept of ECE, SRM Institute of Science & Technology &nbsp;|&nbsp;
+  Logged in as <strong>{{ session.get('user') }}</strong>
+</footer>
+</body>
+</html>

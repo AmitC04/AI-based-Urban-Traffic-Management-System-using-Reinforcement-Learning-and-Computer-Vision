@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Upload Videos — ITMS RL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;background:#0a0f1e;color:#e2e8f0}
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 36px;background:#111827;border-bottom:1px solid #1f2937;position:sticky;top:0;z-index:100}
+.brand{font-family:'Bebas Neue';font-size:1.4rem;color:#818cf8;letter-spacing:2px}
+.nav-links a{color:#6b7280;text-decoration:none;margin-left:22px;font-weight:600;font-size:.83rem;transition:.2s}
+.nav-links a:hover,.nav-links a.active{color:#e2e8f0}
+main{max-width:760px;margin:56px auto;padding:0 24px}
+h1{font-family:'Bebas Neue';font-size:2.6rem;letter-spacing:2px;color:#f1f5f9;margin-bottom:6px}
+.sub{color:#6b7280;margin-bottom:40px;font-size:.92rem}
+.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:32px 36px;margin-bottom:24px}
+.lane-row{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #1f2937}
+.lane-row:last-child{border:none;margin:0;padding:0}
+.lane-lbl{display:flex;align-items:center;gap:10px;font-weight:700;color:#f1f5f9;margin-bottom:10px}
+.badge{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:700}
+.file-wrap{display:flex;align-items:center;gap:12px}
+input[type=file]{display:none}
+.pick-btn{padding:9px 18px;background:#1f2937;border:1px solid #374151;border-radius:8px;color:#d1d5db;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+.pick-btn:hover{background:#374151}
+.fname{color:#4b5563;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.fname.ok{color:#818cf8}
+.submit{margin-top:28px}
+.go-btn{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(90deg,#4f46e5,#7c3aed);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;transition:.2s}
+.go-btn:hover{opacity:.9;transform:translateY(-1px)}
+.tip{margin-top:18px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:14px 18px;color:#93c5fd;font-size:.85rem;line-height:1.6}
+.tip strong{color:#818cf8}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:18px}
+.overlay.show{display:flex}
+.spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.1);border-top-color:#818cf8;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.olt{color:#e2e8f0;font-size:.95rem}
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">🚦 ITMS — RL</span>
+  <div class="nav-links">
+    <a href="/home">Home</a><a href="/upload" class="active">Upload</a>
+    <a href="/dashboard">Dashboard</a><a href="/rl_monitor">RL Monitor</a>
+    <a href="/analysis">Analysis</a><a href="/logout">Logout</a>
+  </div>
+</nav>
+<main>
+  <h1>Upload Lane Videos</h1>
+  <p class="sub">Upload one video per lane. The RL agent will begin learning signal policies immediately. No video? Simulation mode activates automatically.</p>
+  <form method="POST" enctype="multipart/form-data" id="uploadForm">
+    <div class="card">
+      {% for i in range(1,5) %}
+      <div class="lane-row">
+        <div class="lane-lbl"><span class="badge">LANE {{ i }}</span> Lane {{ i }} Video</div>
+        <div class="file-wrap">
+          <label class="pick-btn" for="fi{{ i }}">Choose File</label>
+          <input type="file" id="fi{{ i }}" name="lane{{ i }}" accept="video/*"
+                 onchange="upd(this,'fn{{ i }}')">
+          <span class="fname" id="fn{{ i }}">No file chosen</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="submit">
+      <button class="go-btn" type="submit" onclick="showOvl()">🧠 Upload & Start RL System</button>
+    </div>
+  </form>
+  <div class="tip">
+    <strong>💡 Simulation Mode:</strong> Leave files empty to auto-start with synthetic traffic data.
+    The DQN agent will still learn, explore, and improve in real time — perfect for demos.
+    <br><br>
+    <strong>🧠 RL Note:</strong> The agent starts with ε=1.0 (pure exploration) and gradually
+    shifts to exploitation as it learns. Watch the RL Monitor page for live training charts.
+  </div>
+</main>
+<div class="overlay" id="ovl">
+  <div class="spin"></div>
+  <p class="olt">Initializing RL agent and detectors…</p>
+</div>
+<script>
+function upd(inp,id){const s=document.getElementById(id);if(inp.files[0]){s.textContent=inp.files[0].name;s.classList.add('ok')}else{s.textContent='No file chosen';s.classList.remove('ok')}}
+function showOvl(){document.getElementById('ovl').classList.add('show')}
+</script>
+</body>
+</html>
