@@ -253,7 +253,7 @@ Dept. of Electronics and Communication Engineering
 |---|---|---|
 | **Amit Chauhan** | Lead Developer — RL Agent, Backend, IoT | [@AmitC04](https://github.com/AmitC04) |
 | **Lakshita** | Hardware Integration, Dataset, Testing | [@lakshita4816](https://github.com/lakshita4816) |
-| **Shaily Giri** | Project Contributor | |
+
 
 **Faculty Guide:** Dr. Bharathababu K — Dept. of ECE, SRMIST
 

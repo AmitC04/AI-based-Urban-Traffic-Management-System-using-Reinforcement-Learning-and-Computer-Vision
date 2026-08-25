@@ -1,6 +1,6 @@
-﻿# Hardware IoT - AI Traffic Management System
+# Hardware IoT - AI Traffic Management System
 SRM Institute of Science & Technology
-Amit Chauhan (RA2311004010332) | Shaily Giri | Lakshita
+Amit Chauhan (RA2311004010332) | Lakshita
 Guide: Dr. Bharathababu K
 
 ---
